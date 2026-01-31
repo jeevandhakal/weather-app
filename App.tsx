@@ -1,28 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+// Import your screens
+import CurrentWeather from './src/screens/CurrentWeather';
+import SearchWeather from './src/screens/SearchWeather';
+import SavedLocations from './src/screens/SavedLocations';
+
+// Define the types for our tabs
 export type RootTabParamList = {
-  CurrentWeather: undefined;
+  Current: undefined;
   Search: undefined;
   Saved: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
+
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{ headerShown: true }}>
+        <Tab.Screen name="Current" component={CurrentWeather} />
+        <Tab.Screen name="Search" component={SearchWeather} />
+        <Tab.Screen name="Saved" component={SavedLocations} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
