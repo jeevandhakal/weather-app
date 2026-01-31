@@ -13,3 +13,15 @@ export const initDatabase = async () => {
 export const getSavedLocations = async () => {
   return await db.getAllAsync<{ id: number; name: string }>('SELECT * FROM locations');
 };
+
+
+export const saveCity = async (name: string) => {
+  // Check limit before saving 
+  const countRes = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM locations');
+  if (countRes && countRes.count >= 5) {
+    alert("Limit reached! Remove a city to add a new one.");
+    return false;
+  }
+  await db.runAsync('INSERT INTO locations (name) VALUES (?)', [name]);
+  return true;
+};

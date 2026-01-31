@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// Import your screens
 import CurrentWeather from './src/screens/CurrentWeather';
 import SearchWeather from './src/screens/SearchWeather';
 import SavedLocations from './src/screens/SavedLocations';
+import { initDatabase } from './src/services/dbService';
 
 // Define the types for our tabs
 export type RootTabParamList = {
@@ -17,6 +17,10 @@ export type RootTabParamList = {
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export default function App() {
+  useEffect(() => {
+    initDatabase(); // Create the table if it doesn't exist 
+  }, []);
+  
   return (
     <NavigationContainer>
       <Tab.Navigator screenOptions={{ headerShown: true }}>
@@ -27,3 +31,5 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+
