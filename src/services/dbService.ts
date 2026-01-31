@@ -25,3 +25,14 @@ export const saveCity = async (name: string) => {
   await db.runAsync('INSERT INTO locations (name) VALUES (?)', [name]);
   return true;
 };
+
+
+// Fetch all saved cities
+export const getSavedCities = async () => {
+  return await db.getAllAsync<{ id: number; name: string }>('SELECT * FROM locations');
+};
+
+// Remove a city by ID
+export const deleteCity = async (id: number) => {
+  await db.runAsync('DELETE FROM locations WHERE id = ?', [id]);
+};
