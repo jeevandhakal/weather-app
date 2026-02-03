@@ -1,40 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
 import * as Location from 'expo-location';
 import { fetchWeather } from '../services/weatherService';
 
-const CurrentWeather = () => {
+export default function CurrentWeather() {
   const [weather, setWeather] = useState<any>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      // 1. Request Permission 
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied. Showing Halifax weather.');
-        // Fallback to Halifax coordinates as you are based there
-        const data = await fetchWeather(44.6488, -63.5752); 
-        setWeather(data);
-        return;
-      }
-
-      // 2. Get Location 
-      let location = await Location.getCurrentPositionAsync({});
-      const data = await fetchWeather(location.coords.latitude, location.coords.longitude);
+      const lat = status === 'granted' ? (await Location.getCurrentPositionAsync({})).coords.latitude : 44.6488;
+      const lon = status === 'granted' ? (await Location.getCurrentPositionAsync({})).coords.longitude : -63.5752;
+      
+      const data = await fetchWeather(lat, lon);
       setWeather(data);
+      setLoading(false);
     })();
   }, []);
 
-  if (errorMsg && !weather) return <View><Text>{errorMsg}</Text></View>;
-  if (!weather) return <ActivityIndicator size="large" />;
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 24 }}>Current Temp: {weather.temperature}°C</Text>
-      {errorMsg && <Text style={{ color: 'red' }}>{errorMsg}</Text>}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.label}>HALIFAX, NS</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#007AFF" />
+        ) : (
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.temp}>{Math.round(weather.temperature)}°</Text>
+            <Text style={styles.condition}>{weather.condition}</Text>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
-};
+}
 
-export default CurrentWeather;
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F2F2F7', justifyContent: 'center', alignItems: 'center' },
+  card: {
+    backgroundColor: '#FFFFFF',
+    width: '85%',
+    borderRadius: 35,
+    padding: 40,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 15 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  label: { fontSize: 14, fontWeight: '700', color: '#8E8E93', letterSpacing: 1.5, marginBottom: 10 },
+  temp: { fontSize: 90, fontWeight: '200', color: '#1C1C1E' },
+  condition: { fontSize: 20, fontWeight: '500', color: '#3A3A3C' },
+});
