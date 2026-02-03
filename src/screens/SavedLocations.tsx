@@ -1,69 +1,79 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { getSavedCities, deleteCity } from '../services/dbService';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { getSavedLocations, removeLocation } from '../services/dbService';
 import { getCoordinates, fetchWeather } from '../services/weatherService';
-
-interface SavedWeather {
-  id: number;
-  name: string;
-  temp: number | null;
-}
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function SavedLocations() {
-  const [locations, setLocations] = useState<SavedWeather[]>([]);
+  const [locations, setLocations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const isFocused = useIsFocused(); // Refresh data when tab is clicked
 
   const loadData = async () => {
-    const saved = await getSavedCities();
+    setLoading(true);
+    const savedCities = await getSavedLocations();
     const weatherData = await Promise.all(
-      saved.map(async (city) => {
+      savedCities.map(async (city) => {
         const coords = await getCoordinates(city.name);
         if (coords) {
           const w = await fetchWeather(coords.lat, coords.lon);
           return { id: city.id, name: city.name, temp: w.temperature };
         }
-        return { id: city.id, name: city.name, temp: null };
+        return null;
       })
     );
-    setLocations(weatherData);
+    setLocations(weatherData.filter(item => item !== null));
+    setLoading(false);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
+  useEffect(() => { if (isFocused) loadData(); }, [isFocused]);
 
-  const handleRemove = async (id: number) => {
-    await deleteCity(id);
-    loadData(); // Refresh the list after deletion [cite: 25, 34]
+  const handleDelete = async (id: number) => {
+    await removeLocation(id);
+    loadData(); // Refresh list after deletion
   };
+
+  if (loading) return <ActivityIndicator style={{flex:1}} size="large" color="#007AFF" />;
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Favorite Cities</Text>
       <FlatList
         data={locations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.cityText}>{item.name}: {item.temp ?? '--'}°C</Text>
-            <Button title="Remove" color="red" onPress={() => handleRemove(item.id)} />
+          <View style={styles.cityCard}>
+            <View>
+              <Text style={styles.cityName}>{item.name}</Text>
+              <Text style={styles.cityTemp}>{Math.round(item.temp)}°C</Text>
+            </View>
+            <TouchableOpacity onPress={() => handleDelete(item.id)}>
+              <MaterialIcons name="delete-outline" size={24} color="#FF3B30" />
+            </TouchableOpacity>
           </View>
         )}
-        ListEmptyComponent={<Text>No saved locations yet.</Text>}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  card: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    padding: 15, 
-    borderBottomWidth: 1,
-    alignItems: 'center' 
+  container: { flex: 1, backgroundColor: '#F2F2F7', padding: 20, paddingTop: 60 },
+  title: { fontSize: 28, fontWeight: '800', color: '#1C1C1E', marginBottom: 20 },
+  cityCard: {
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 20,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
-  cityText: { fontSize: 18 }
+  cityName: { fontSize: 18, fontWeight: '600', color: '#1C1C1E' },
+  cityTemp: { fontSize: 22, fontWeight: '300', color: '#007AFF' },
 });
