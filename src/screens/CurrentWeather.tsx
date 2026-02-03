@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import { fetchWeather } from '../services/weatherService';
+import { SafeAreaView  } from 'react-native-safe-area-context';
 
 export default function CurrentWeather() {
   const [weather, setWeather] = useState<any>(null);
@@ -20,7 +21,7 @@ export default function CurrentWeather() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView  style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.label}>HALIFAX, NS</Text>
         {loading ? (
@@ -32,7 +33,7 @@ export default function CurrentWeather() {
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
