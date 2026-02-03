@@ -17,7 +17,10 @@ export default function SearchWeather() {
     if (coords) {
       const data = await fetchWeather(coords.lat, coords.lon);
       setWeather({ ...data, name: coords.name });
-    } 
+    } else {
+      setWeather(null);
+      alert('City not found. Please try again.');
+    }
     setLoading(false);
   };
 
