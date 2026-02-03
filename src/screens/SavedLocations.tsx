@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { getSavedLocations, removeLocation } from '../services/dbService';
+import { getSavedLocations, deleteCity } from '../services/dbService';
 import { getCoordinates, fetchWeather } from '../services/weatherService';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -30,7 +30,7 @@ export default function SavedLocations() {
   useEffect(() => { if (isFocused) loadData(); }, [isFocused]);
 
   const handleDelete = async (id: number) => {
-    await removeLocation(id);
+    await deleteCity(id);
     loadData(); // Refresh list after deletion
   };
 
