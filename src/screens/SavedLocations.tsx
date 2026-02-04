@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { getSavedLocations, deleteCity } from '../services/dbService';
-import { getCoordinates, fetchWeather } from '../services/weatherService';
+import { fetchWeather } from '../services/weatherService';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function SavedLocations() {
@@ -15,15 +15,11 @@ export default function SavedLocations() {
     const savedCities = await getSavedLocations();
     const weatherData = await Promise.all(
       savedCities.map(async (city) => {
-        const coords = await getCoordinates(city.name);
-        if (coords) {
-          const w = await fetchWeather(coords.lat, coords.lon);
-          return { id: city.id, name: city.name, temp: w.temperature };
-        }
-        return null;
+        const w = await fetchWeather(city.lat ?? 0, city.lon ?? 0);
+        return { id: city.id, name: city.name, temp: w.temperature };
       })
     );
-    setLocations(weatherData.filter(item => item !== null));
+    setLocations(weatherData);
     setLoading(false);
   };
 

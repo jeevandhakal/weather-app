@@ -7,4 +7,6 @@ export interface WeatherData {
 export interface SavedLocation {
   id: number;
   name: string;
+  lat: number;
+  lon: number;
 }

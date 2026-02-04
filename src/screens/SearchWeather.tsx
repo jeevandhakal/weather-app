@@ -16,7 +16,7 @@ export default function SearchWeather() {
     const coords = await getCoordinates(query);
     if (coords) {
       const data = await fetchWeather(coords.lat, coords.lon);
-      setWeather({ ...data, name: coords.name });
+      setWeather({ ...data, name: coords.name, lat: coords.lat, lon: coords.lon });
     } else {
       setWeather(null);
       alert('City not found. Please try again.');
@@ -30,7 +30,7 @@ export default function SearchWeather() {
   };
 
   const handleSave = async () => {
-    const success = await saveCity(weather.name);
+    const success = await saveCity(weather.name, weather.lat, weather.lon);
     if (success) alert(`${weather.name} saved to favorites!`);
   };
 
