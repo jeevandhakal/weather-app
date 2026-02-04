@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
 import { getCoordinates, fetchWeather } from '../services/weatherService';
 import { saveCity } from '../services/dbService';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,7 +36,7 @@ export default function SearchWeather() {
 
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} disabled={Platform.OS === 'web'} accessible={false}>
       <View style={styles.container}>
         <View style={styles.searchSection}>
           <View style={styles.inputWrapper}>
