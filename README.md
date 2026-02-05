@@ -75,10 +75,11 @@ Screenshots from the Android run:
   </tr>
   <tr>
     <td><img src="screenshots/added_to_fav.jpeg" alt="Added to favorites" width="200" /></td>
+    <td><img src="screenshots/city_not_found.jpeg" alt="Save limit reached" width="200" /></td>
     <td><img src="screenshots/list_of_5_fav.jpeg" alt="List of 5 favorites" width="200" /></td>
-    <td><img src="screenshots/save_limit_reached.jpeg" alt="Save limit reached" width="200" /></td>
   </tr>
   <tr>
+  <td><img src="screenshots/save_limit_reached.jpeg" alt="Save limit reached" width="200" /></td>
     <td><img src="screenshots/list_of_fav_after_delete.jpeg" alt="Favorites after delete" width="200" /></td>
     <td></td>
     <td></td>

@@ -42,7 +42,7 @@ export default function SearchWeather() {
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="Search city (e.g. Tokyo)"
+              placeholder="Search city"
               placeholderTextColor="#8E8E93"
               value={query}
               onChangeText={setQuery}
@@ -65,6 +65,18 @@ export default function SearchWeather() {
           <View style={styles.resultCard}>
             <Text style={styles.cityName}>{weather.name.toUpperCase()}</Text>
             <Text style={styles.temp}>{Math.round(weather.temperature)}°C</Text>
+            <Text style={styles.condition}>{weather.condition}</Text>
+
+            <View style={styles.detailRow}>
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Wind</Text>
+                <Text style={styles.detailValue}>{Math.round(weather.windspeed)} km/h</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Direction</Text>
+                <Text style={styles.detailValue}>{weather.windDirectionCardinal} ({Math.round(weather.winddirection)}°)</Text>
+              </View>
+            </View>
 
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
               <Text style={styles.saveButtonText}>SAVE TO FAVORITES</Text>
@@ -147,6 +159,16 @@ const styles = StyleSheet.create({
     color: '#1C1C1E',
     marginVertical: 10
   },
+  condition: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#3A3A3C',
+    marginBottom: 10
+  },
+  detailRow: { flexDirection: 'row', marginTop: 4, marginBottom: 12 },
+  detailItem: { alignItems: 'center', marginHorizontal: 12 },
+  detailLabel: { fontSize: 12, color: '#8E8E93' },
+  detailValue: { fontSize: 14, color: '#1C1C1E', fontWeight: '600', marginTop: 2 },
   saveButton: {
     marginTop: 20,
     backgroundColor: '#E5E5EA',

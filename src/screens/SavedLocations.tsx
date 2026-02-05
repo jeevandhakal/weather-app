@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { getSavedLocations, deleteCity } from '../services/dbService';
-import { fetchWeather } from '../services/weatherService';
+import { fetchWeather, getCoordinates } from '../services/weatherService';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function SavedLocations() {
@@ -13,12 +13,31 @@ export default function SavedLocations() {
   const loadData = async () => {
     setLoading(true);
     const savedCities = await getSavedLocations();
-    const weatherData = await Promise.all(
-      savedCities.map(async (city) => {
-        const w = await fetchWeather(city.lat ?? 0, city.lon ?? 0);
-        return { id: city.id, name: city.name, temp: w.temperature };
-      })
-    );
+    const weatherData = await Promise.all(savedCities.map(async (city) => {
+        let lat = city.lat;
+        let lon = city.lon;
+        // If coordinates are missing, resolve by city name
+        if (lat == null || lon == null) {
+          const resolved = await getCoordinates(city.name);
+          if (resolved) {
+            lat = resolved.lat;
+            lon = resolved.lon;
+          }
+        }
+        if (lat == null || lon == null) {
+          // Skip if still missing; return minimal info
+          return { id: city.id, name: city.name, temp: NaN, condition: 'Unknown', windspeed: NaN, windDirectionCardinal: '—' };
+        }
+        const w = await fetchWeather(Number(lat), Number(lon));
+        return {
+          id: city.id,
+          name: city.name,
+          temp: w.temperature,
+          condition: w.condition,
+          windspeed: w.windspeed,
+          windDirectionCardinal: w.windDirectionCardinal,
+        };
+      }));
     setLocations(weatherData);
     setLoading(false);
   };
@@ -42,7 +61,8 @@ export default function SavedLocations() {
           <View style={styles.cityCard}>
             <View>
               <Text style={styles.cityName}>{item.name}</Text>
-              <Text style={styles.cityTemp}>{Math.round(item.temp)}°C</Text>
+              <Text style={styles.cityTemp}>{isNaN(item.temp) ? '—' : `${Math.round(item.temp)}°C`}</Text>
+              <Text style={styles.cityCondition}>{item.condition} • Wind {Math.round(item.windspeed)} km/h {item.windDirectionCardinal}</Text>
             </View>
             <TouchableOpacity onPress={() => handleDelete(item.id)}>
               <MaterialIcons name="delete-outline" size={24} color="#FF3B30" />
@@ -72,4 +92,5 @@ const styles = StyleSheet.create({
   },
   cityName: { fontSize: 18, fontWeight: '600', color: '#1C1C1E' },
   cityTemp: { fontSize: 22, fontWeight: '300', color: '#007AFF' },
+  cityCondition: { fontSize: 12, color: '#8E8E93', marginTop: 4 },
 });

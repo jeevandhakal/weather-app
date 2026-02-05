@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, ActivityIndicator, Alert, Platform, Linking, To
 import * as Location from 'expo-location';
 import { fetchWeather } from '../services/weatherService';
 import { SafeAreaView  } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function CurrentWeather() {
   const [weather, setWeather] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [openedSettings, setOpenedSettings] = useState(false);
+  const isFocused = useIsFocused();
 
   const loadWeather = async () => {
     try {
@@ -68,6 +70,14 @@ export default function CurrentWeather() {
     loadWeather();
   }, []);
 
+  // Refresh when navigating back to this screen
+  useEffect(() => {
+    if (isFocused) {
+      setLoading(true);
+      loadWeather();
+    }
+  }, [isFocused]);
+
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active' && openedSettings) {
@@ -105,8 +115,18 @@ export default function CurrentWeather() {
           <ActivityIndicator size="large" color="#007AFF" />
         ) : (
           <View style={{ alignItems: 'center' }}>
-            <Text style={styles.temp}>{Math.round(weather.temperature)}° C</Text>
-            <Text style={styles.condition}>{weather.condition}</Text>
+            <Text style={styles.temp}>{Math.round(weather?.temperature)}°C</Text>
+            <Text style={styles.condition}>{weather?.condition}</Text>
+            <View style={styles.detailsRow}>
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Wind</Text>
+                <Text style={styles.detailValue}>{Math.round(weather?.windspeed)} km/h</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Direction</Text>
+                <Text style={styles.detailValue}>{weather?.windDirectionCardinal} ({Math.round(weather?.winddirection)}°)</Text>
+              </View>
+            </View>
           </View>
         )}
       </View>
@@ -135,4 +155,8 @@ const styles = StyleSheet.create({
   settingsBtnText: { color: '#FFFFFF', fontWeight: '600' },
   temp: { fontSize: 90, fontWeight: '200', color: '#1C1C1E' },
   condition: { fontSize: 20, fontWeight: '500', color: '#3A3A3C' },
+  detailsRow: { flexDirection: 'row', marginTop: 18 },
+  detailItem: { alignItems: 'center', marginHorizontal: 12 },
+  detailLabel: { fontSize: 12, color: '#8E8E93' },
+  detailValue: { fontSize: 14, color: '#1C1C1E', fontWeight: '600', marginTop: 2 },
 });

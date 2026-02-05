@@ -35,7 +35,7 @@ export const initDatabase = async () => {
 
 export const getSavedLocations = async () => {
   const db = await dbPromise;
-  return await db.getAllAsync<{ id: number; name: string; lat: number | null; lon: number | null }>('SELECT id, name, lat, lon FROM locations');
+  return await db.getAllAsync<{ id: number; name: string; lat: number; lon: number }>('SELECT id, name, lat, lon FROM locations');
 };
 
 export const saveCity = async (name: string, lat: number, lon: number) => {
@@ -54,7 +54,7 @@ export const saveCity = async (name: string, lat: number, lon: number) => {
 // Fetch all saved cities
 export const getSavedCities = async () => {
   const db = await dbPromise;
-  return await db.getAllAsync<{ id: number; name: string; lat: number | null; lon: number | null }>('SELECT id, name, lat, lon FROM locations');
+  return await db.getAllAsync<{ id: number; name: string; lat: number ; lon: number }>('SELECT id, name, lat, lon FROM locations');
 };
 
 // Remove a city by ID
