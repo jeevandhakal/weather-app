@@ -54,20 +54,37 @@ This launches Expo Dev Tools. From here you can:
 - Press `a` to launch Android emulator (if configured), or
 - Press `w` to open the web build in your browser.
 
-### Direct platform commands
-- Android:
-
-    ```bash
-    pnpm android
-    ```
-
-- Web:
-
-    ```bash
-    pnpm web
-    ```
 
 > iOS commands exist but require macOS; on Windows, use Android or Web.
+
+## Testing on Android with Expo GO
+Use Expo Go on an Android device or emulator to validate core flows. Start the dev server with `pnpm start`, then press `a` for Android or scan the QR in Expo Dev Tools.
+
+Screenshots from the Android run:
+
+<table>
+  <tr>
+    <td><img src="screenshots/location_permission_request.jpeg" alt="Location permission request" width="200" /></td>
+    <td><img src="screenshots/handle_permission_denial0.jpeg" alt="Alternate denial prompt" width="200" /></td>
+    <td><img src="screenshots/handle_permission_denial.jpeg" alt="Handle permission denial" width="200" /></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/open_setting_feature.jpeg" alt="Open settings quick action" width="200" /></td>
+    <td><img src="screenshots/current_location_weather.jpeg" alt="Current location weather" width="200" /></td>
+    <td><img src="screenshots/search_by_city.jpeg" alt="Search by city" width="200" /></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/added_to_fav.jpeg" alt="Added to favorites" width="200" /></td>
+    <td><img src="screenshots/list_of_5_fav.jpeg" alt="List of 5 favorites" width="200" /></td>
+    <td><img src="screenshots/save_limit_reached.jpeg" alt="Save limit reached" width="200" /></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/list_of_fav_after_delete.jpeg" alt="Favorites after delete" width="200" /></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
 
 ## Permissions & Data
 - Location: The app requests foreground location permission. If denied, it shows Halifax weather by default and offers a quick link to open device settings.
@@ -109,3 +126,4 @@ No API keys are required. Weather and geocoding use Open‑Meteo public endpoint
 ## Notes
 - Keep Node.js within supported versions for Expo SDK 54 (18/20 LTS recommended).
 - If you switch package managers, remove `node_modules` and lockfiles, then reinstall (e.g., `pnpm install`).
+
